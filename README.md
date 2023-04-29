@@ -1,5 +1,5 @@
-# Research Project: An Approach to Artificial General Intelligence
-# Overview:
+## An Approach to Artificial General Intelligence
+### Overview:
 
 Welcome to the research project on "An Approach to Artificial General Intelligence"! This project aims to explore various aspects of achieving Artificial General Intelligence (AGI) by leveraging large language models (LLMs) and incorporating insights from the fields of geometry, abstract mathematics, prompt engineering, and brain architecture. This project is open source, and we encourage contributions from the AI community to further advance our understanding of AGI.
 
