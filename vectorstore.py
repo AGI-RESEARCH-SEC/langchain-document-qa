@@ -1,44 +1,45 @@
 import os
-import getpass
 from langchain.document_loaders import PyPDFLoader
-from langchain.vectorstores import Pinecone
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-
-loader = PyPDFLoader("/turing.pdf")
-pages = loader.load_and_split()
+from langchain.vectorstores import Chroma
+from langchain.document_loaders import TextLoader
 
 
-# text_splitter= CharacterTextSplitter(
-#     separator="\n\n",
-#     chunk_size= 1000,
-#     chunk_overlap= 200,
-#     length_function= len,
-# )
 
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=200,
-    chunk_overlap=20,
-    length_function=len,
-    separators=["\n\n"]
+# loader = PyPDFLoader("/turing.pdf")
+# pages = loader.load_and_split()
+
+loader = TextLoader('D:/pretrained models/chapter-5.txt')
+documents = loader.load()
+
+text_splitter= CharacterTextSplitter(
+    separator="\n\n",
+    chunk_size= 1000,
+    chunk_overlap= 20,
+    length_function= len,
 )
 
 
-texts= text_splitter.create_documents([str(pages)])
+docs= text_splitter.split_documents(documents)
+
 # embeddingss = SentenceTransformer('bert-base-nli-mean-tokens')
 embeddings= HuggingFaceEmbeddings()
-doc_result= embeddings.embed_documents([str(pages)])
+
+
+persist_directory= 'D:\pretrained models\persist_directory'
+
+vector_db= Chroma.from_documents(docs, embeddings, persist_directory= persist_directory)
+vector_db.persist()
+
+
+retriever= vector_db.as_retriever(search_type= "mmr")
+docs= retriever.get_relevant_documents("what is UDP?")
+
+print(docs[0].page_content)
 
 # sentence_embeddings = embeddingss.encode(pages[0])
 # print(sentence_embeddings)
-print(len(str(texts)))
-print(len(str(doc_result)))
-print([texts])
-# index_name = "langchain-demo"
-# docsearch = Pinecone.from_documents([texts], doc_result, index_name=index_name)
-
-# PINECONE_API_KEY = getpass.getpass('Pinecone API Key:')
-
-# query = "What is the paper about?"
-# docs = docsearch.similarity_search(query)
+# print(len(str(texts)))
+# print(len(str(doc_result)))
+# print([texts])

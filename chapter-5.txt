@@ -1,0 +1,693 @@
+                                  Transport Layer
+
+Introduction to transport layer services:
+
+       A transport-layer protocol provides for logical communication between
+application processes running on different hosts. Logical communication means
+that from an application's perspective, it is as if the hosts running the processes
+were directly connected. Application processes use the logical communication
+provided by the transport layer to send messages to each other.
+
+        Transport-layer protocols are implemented in the end systems but not in
+network routers. On the sending side, the transport layer converts the
+application-layer messages it receives from a sending application process into
+transport-layer packets, known as transport-layer segments. This is done by
+(possibly) breaking the application messages into smaller chunks and adding a
+transport-layer header to each chunk to create the transport-layer segment.
+
+The transport layer then passes the segment to the network layer at the sending
+end system, where the segment is encapsulated within a network-layer packet (a
+datagram) and sent to the destination. On the receiving side, the network layer
+extracts the transport-layer segment from the datagram and passes the segment
+up to the transport layer. The transport layer then processes the received
+segment, making the data in the segment available to the receiving application.
+
+Transport Layer Functions:
+
+Functions that you can encounter in the Transport Layer are:
+
+    Error Handling
+    Flow Control
+    Multiplexing
+    Connection Set-up and Release
+    Congestion Handling
+    Segmentation and Reassembly
+    Addressing
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+Services Provided to the Upper Layers
+
+    The ultimate goal of the transport layer is to provide efficient, reliable, and
+       cost-effective data transmission service to its users, normally processes in
+       the application layer.
+
+    The software and/or hardware within the transport layer that does the
+       work is called the transport entity.
+
+    Provide logical communication between application processes running on
+       different hosts.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+ Transport protocols run in end systems:
+       o send side: breaks application messages into segments, passes to
+           network layer
+       o receive side: reassembles segments into messages, passes to
+           application layer
+
+ More than one transport protocol available to apps
+       o Internet: TCP and UDP
+
+Addressing:
+
+ TCP communication between two remote hosts is done by means of 16-bit
+   port numbers known as Transport Service Access Points.
+
+ Port numbers ranges from 0 to 65535.
+   0 ­ 1023 = System port (Well-known ports)
+   1024 ­ 49151 = Registered ports
+   49152 ­ 65535 = dynamically assigned port numbers (Private port no.)
+
+Some well known ports:
+
+HTTP = 80               HTTPs = 443
+
+SMTP = 25               DNS = 53
+
+FTP data = 20           FTP control = 21 etc.
+
+Transport Layer Protocols:
+
+Connectionless Transport: User Datagram Protocol (UDP)
+
+               UDP is defined in RFC 768. UDP is the simplest transport layer
+protocol as it does not provide any error correction mechanism as a result it is
+also called as unreliable protocol. In UDP there is no handshaking between
+sending and receiving transport-layer entities before sending a segment. For this
+reason, UDP is said to be connectionless. As it is connectionless protocol there is
+no guarantee that the data packet sent by the sender will reach to the specified
+host. Also in UDP there is no mechanism for acknowledgement so packets which
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+are lost will never be retransmitted. As a result UDP is faster than TCP and it is
+used where the loss of packet is tolerable.
+UDP segment structure:
+
+                                                                                                UDP Header
+                                                                                                8 Bytes
+
+                       Fig: UDP segment structure
+As shown in figure, UDP segment structure contains five fields. A 2-byte source
+port number, 2-byte destination port number, length field to specify total length
+of UDP segment structure, checksum for error detection and application data field
+for message transmission.
+In the UDP segment structure, the UDP header contains 4 fields each of 2-bytes
+as shown in previous figure.
+
+   1. Source port number: it contains the port number of the source process
+       that is sending the message.
+
+   2. Destination port number: it contains the port number of the destination
+       process so that message can be sent to the correct process running in the
+       destination host.
+
+   3. Length: The length field specifies the number of bytes in the UDP segment
+       (header plus data).
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+   4. Checksum: The checksum is used by the receiving host to check whether
+       errors have been introduced into the segment. That is, the checksum is
+       used to determine whether bits within the UDP segment have been altered
+       (for example, by noise in the links or while stored in a router) as it moved
+       from source to destination.
+
+   5. Application Data Field: The application data occupies the data field of the
+       UDP segment. For a streaming audio application, audio samples fill the data
+       field.
+
+Advantages of UDP:
+
+   · It uses small packet size with small header (8 bytes). This fewer bytes in the
+       overhead makes UDP protocol need less time in processing the packet and
+       need less memory.
+
+   · It does not require connection to be established and maintained.
+
+   · Also absence of acknowledgement field in UDP makes it faster as it need
+       not have to wait on ACK or need not have to hold data in memory until they
+       are ACKed.
+
+   · It uses checksum with all the packets for error detection.
+
+Disadvantages of UDP:
+
+   · It is connectionless and unreliable transport protocol. There is no
+       windowing and no function to ensure data is received in the same order as
+       it was transmitted.
+
+   · It does not use any error control. Hence if UDP detects any error in the
+       received packet, it silently drops it.
+
+   · There is no congestion control. Hence large number of users transmitting
+       lots of data via UDP can cause congestion and no one can do anything
+       about it.
+
+   · There is no flow control and no acknowledgement for received data.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+   · No retransmission of data packet if the packet is lost.
+
+Where to use UDP?
+
+               Even though TCP is the dominant protocol but due to its slow
+performance, UDP is used where faster data transmission is required and little
+data packet is tolerable. UDP is generally used in following situations:
+
+   1. For simple request and response communication where size of data is less
+       and hence there is lesser concern about flow and error control.
+
+   2. UDP is more preferable when using multicast or broadcast to transfer.
+
+   3. For transmission of real time packets normally in multimedia application i.e.
+       for audio and video streaming.
+
+   4. UDP is used for DNS querying. From host to DNS server the query is sent
+       through UDP protocol. If the query reaches to the DNS server a reply is
+       sent. If no reply is achieved by the host in a certain time interval, host
+       assumes that the query packet is lost. Hence, either it tries sending the
+       query to another name server, or it informs the invoking application that it
+       can't get a reply. DNS will be very slow if it uses TCP instead of UDP.
+
+   5. UDP is used when the network layer is using RIP because it needs periodic
+       updation of routing table. Even if the updating packet is lost it does not
+       matter as RIP performs periodic updation so after some interval a new
+       updating packet will be sent and the previous loss of packet doesn't make
+       any difference.
+
+Connection Oriented Transport: Transmission Control Protocol(TCP)
+
+Transmission Control Protocol (TCP) is a connection-oriented protocol that
+computers use to communicate over the internet. It is one of the main protocols
+in TCP/IP networks. TCP provides error-checking and guarantees delivery of data
+and that packets will be delivered in the order they were sent. As a result it is
+called as reliable protocol. TCP uses flow control and congestion control
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+mechanism that ensures a sender is not overwhelming a receiver by sending too
+many packets at once. Even if the packet is lost due to congestion the packet is
+retransmitted by the sender.
+TCP segment structure:
+
+                          Fig: TCP segment structure
+1. Source port:
+
+               A 16-bit field that contains the port number of the source process
+that is sending the message.
+2. Destination Port:
+
+                A 16-bit field that contains the port number of the destination
+process that is receiving the message.
+3. Sequence number:
+
+               A 32-bit number identifying the current position of the first data byte
+in the segment within the entire byte stream for the TCP connection.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+4. Acknowledge number:
+
+               A 32-bit number identifying the next data byte the sender expects
+from the receiver. Therefore, the number will be one greater than the most
+recently received data byte.
+5. Header length or offset:
+
+               A 4-bit field that specifies the total TCP header length in 32-bit
+words. Without options the TCP header is always 20 bytes in length. The largest
+TCP header may be is 60 bytes.
+
+6. Reserved/Unused:
+
+               A 6-bit field is currently unused and is reserved for future use.
+7. Control bits or flags:
+
+                The flag field contains 6 bits. The ACK bit is used to indicate that the
+value carried in the acknowledgment field is valid; that is, the segment contains
+an acknowledgment for a segment that has been successfully received. The RST,
+SYN, and FIN bits are used for connection setup and teardown. PSH bit indicates
+that the receiver should pass the data to the upper layer immediately. Finally, the
+URG bit is used to indicate that there is data in this segment that the sending-side
+upper-layer entity has marked as "urgent."
+8. Window:
+
+               A 16-bit integer is used by TCP for flow control in the form of a data
+transmission window size. This number tells the sender how much data the
+receiver is willing to accept.
+
+9. Checksum:
+
+               A 16-bit checksum field for the error detection.
+
+10. Urgent Pointer:
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+               The 16-bit field tells the receiver when the last byte of urgent data in
+the segment ends.
+
+11. Options:
+
+               In order to provide additional functionality, several parameters may
+be used between a TCP sender and receiver. Depending on the option(s) used, the
+length of this field will vary in size. Options are generally used for various flow
+control and congestion control techniques.
+
+TCP Connection Establishment and Termination:
+
+TCP Connection Establishment (3-Way Handshake):
+
+The following scenario occurs when a TCP connection is established:
+
+   1. Client initiates the connection and send a "synchronize" (SYN) segment,
+       which tells server the client's initial sequence number for the data that the
+       client will send on the connection. Here, SYN flag is set.
+
+   2. The server must acknowledge (ACK) the client's SYN and the server must
+       also send its own SYN containing the initial sequence number for the data
+       that the server will send on the connection. The server sends its SYN and
+       the ACK of the client's SYN in a single segment. Here both ACK and SYN
+       flags are set
+
+   3. The client must acknowledge the server's SYN. Here, ACK flag is set.
+
+   The minimum number of packets required for this exchange is three; hence,
+   this is called TCP's three-way handshake.
+
+Data Transmission:
+
+    Once connection is established, continuous stream of data are sent by the
+       source in the form of TCP packets.
+
+    When a packet of data is sent over TCP, the recipient must always
+       acknowledge what they received.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+    The source sends a packet with data and a sequence number. The second
+       computer acknowledges it by setting the ACK bit and increasing the
+       acknowledgement number by the length of the received data.
+
+    Sequence number and acknowledgement numbers help the computers to
+       keep track of which data was successfully received, which data was lost,
+       and which data was accidentally sent twice
+
+TCP Connection Termination
+While it takes three segments to establish a connection, it takes four to terminate
+a connection.
+
+   1. One application calls close first, and we say that this end performs the
+       active close. This end's TCP sends a FIN segment, which means it is
+       finished sending data.
+
+   2. The other end that receives the FIN performs the passive close. The
+       received FIN is acknowledged by TCP. The receipt of the FIN is also passed
+       to the application as an end-of-file (after any data that may have already
+       been queued for the application to receive), since the receipt of the FIN
+       means the application will not receive any additional data on the
+       connection.
+
+   3. Sometime later, the application that received the end-of-file will close its
+       socket. This causes its TCP to send a FIN.
+
+   4. The TCP on the system that receives this final FIN (the end that did the
+       active close) acknowledges the FIN.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+            Fig: Packets exchanged when a TCP connection is closed
+
+   TCP Operation:
+
+   TCP provides the following major services to the upper protocol layers:
+        Connection-oriented data management to ensure the end to end
+           transfer of data across the network(s).
+        Reliable data transfer to assure that all data is accurately received in
+           sequence and with no duplicates.
+        Stream-oriented data transfer takes place between the sender
+           application and TCP and the receiving application and TCP.
+
+    Prior to data transmission, hosts establish a virtual connection via a
+       synchronization process. The synch process is a 3-way "handshake", which
+       ensures both sides are ready to transfer data and determines the initial
+       sequence numbers.
+
+    Sequence numbers are reference numbers between the two devices.
+    Sequence numbers give hosts a way to acknowledge what they have
+
+       received.
+
+Connection Establishment and Connection Release:
+
+   · The three-way handshake was introduced to establish a connection.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+   · The first machine sends a CONNECTION REQUEST to host 2 containing a
+       sequence number.
+
+   · Host 2 replies with an ACK acknowledging the sequence number and
+       sending it's own initial sequence number.
+
+   · Host 1 acknowledges Host 2's choice of sequence number in the first data
+       packet.
+
+   Connection Release:
+   · We can release the connection symmetrically or asymmetrically.
+   · Asymmetric is just like a telephone ­ when one person ends the
+
+       connection, it is broken.
+   · Asymmetric release can cause data loss if one side sends data that is not
+
+       received before the disconnect.
+   · Symmetric ­ treats the connection like two unidirectional connections,
+
+       requiring each end of the connection to be released.
+   · Unfortunately, determining when the two sides are done is difficult.
+   · This problem is known as the two-army problem.
+
+       
+   · Host 1 sends a Disconnect Request (DR) to Host 2.
+   · Host 2 replies with a DR and starts a timer just in case the reply is lost.
+   · Host 1 will ACK the DR from Host 2 and release the connection.
+   · When the ACK arrives, Host 2 will drop the connection.
+   · If the final ACK is lost, the time will take care of the disconnection.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+                       Fig: Connection Release Protocols
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+Port and Socket:
+    Each process that wants to communicate with another process identifies itself to the TCP/IP
+
+         protocol suite by one or more ports.
+
+    Usually a service is associated with a port (e.g. http on port 80).
+
+                        Fig: Using Ports to identify services
+Sockets:
+
+    A socket is one endpoint of a two way communication link between two
+       programs running on the network.
+
+    A pair of processes communicating over a network employs a pair of
+       sockets- one for each process.
+
+    To an application, a socket is a file descriptor that lets the application
+       read/write from/to the network.
+
+    Sockets are uniquely identified by an IP address, end-to-end protocol, and a
+       port number.
+
+    The server waits for incoming client requests by listening to a specified
+       port. Once a request is received, the server accepts a connection from the
+       client socket to complete the connection.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+There are two types of sockets:
+
+   1. Datagram Socket: (Connection-less Socket)
+        It provides unreliable, best- effort networking service
+        Packets may be lost; may arrive out of order (uses UDP)
+        applications: streaming audio/ video (real-player), ...
+
+   2. Stream Socket: (Connection-Oriented Socket)
+        It provides reliable, connected networking service
+        Error free; no out- of- order packets (uses TCP)
+        Applications: telnet/ ssh, http, ...
+
+Flow Control:
+
+    Flow control at this layer is performed end-to-end rather than across a
+       single link.
+
+    A sliding window is used to make data transmission more efficient as well
+       as to control the flow of data so that the receiver does not become
+       overwhelmed.
+
+    Some points about sliding windows at the transport layer:
+           o The sender does not have to send a full window's worth of data.
+           o An acknowledgment can expand the size of the window based on the
+               sequence number of the acknowledged data segment.
+           o The size of the window can be increased or decreased by the
+               receiver.
+           o The receiver can send an acknowledgment at anytime.
+
+TCP Windows and Flow Control:
+
+    Data often is too large to be sent in a single segment.
+    TCP splits the data into multiple segments.
+    TCP provides flow control through "windowing" to set the pace of how
+
+       much data is sent at a time
+           o how many bytes per window, and how many windows between
+               ACKs.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+    Sliding window refers to the fact that the window size is negotiated
+       dynamically during the TCP session.
+
+    If the source receives no acknowledgment, it knows to retransmit at a
+       slower rate.
+
+Reliable Delivery
+Sequence and ACK Numbers:
+
+    Each TCP segment is numbered before transmission so that the receiver
+       will be able to properly reassemble the bytes in their original order.
+
+    They also identify missing data pieces so the sender can retransmit them.
+    Only the missing segments need to be re-transmitted.
+Positive Ack and Retransmission:
+    Source sends packet, starts timer, and waits for ACK.
+    If timer expires before source receives ACK, source retransmits the packet
+
+       and restarts the timer.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+Error Control:
+    Mechanisms for error control are based on error detection and
+       retransmission.
+    Error detections are performed using algorithms implemented in software,
+       such as checksum.
+    We already have error handling at the data link layer, why do we need it at
+       the transport layer?
+
+   Multiplexing and De-Multiplexing:
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+        Gathering data from multiple application processes of sender,
+           enveloping that data with header and sending them as a whole to the
+           intended receiver is called as multiplexing.
+
+        Delivering received segments at receiver side to the correct app layer
+           processes is called as de-multiplexing.
+
+   How multiplexing and De-multiplexing is done?
+   For sending data from an application at sender side to an application at the
+   destination side, sender must know the IP address of destination and port
+   number of the application (at the destination side) to which he wants to
+   transfer the data. The job of gathering data chunks at the source host from
+   different sockets, encapsulating each data chunk with header information to
+   create segments, and passing the segments to the network layer is called
+   multiplexing.
+   For demultiplexing, host receives IP datagram which contains source and
+   destination IP address along with source and destination port number.
+   Receiving host will uses these IP addresses and port numbers to direct
+   segment to appropriate socket.
+   Connection-less Demultiplexing:
+
+        UDP socket identified by two tuple:
+               o (destination IP address, destination port number)
+
+        When host receives UDP segment:
+               o checks destination port number in segment
+               o directs UDP segment to socket with that port number
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+                           Fig: Connection-less Demultiplexing
+
+   Connection Oriented De-multiplexing:
+
+          TCP socket identified by 4- tuple:
+                  o source IP address
+                  o source port number
+                  o destination IP address
+                  o destination port number
+
+          receiving host uses all four values to direct segment to appropriate socket
+          Server host may support many simultaneous TCP sockets:
+
+                  o each socket identified by its own 4-tuple
+          Web servers have different sockets for each connecting Client
+
+                  o non-persistent HTTP will have different socket for each request
+
+                           Fig: Connection-Oriented De-multiplexing
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+   Congestion Control:
+        Too many packets present in the network cause packet delay and loss
+           that degrades performance. This situation is called congestion.
+        Congestion control refers to the mechanisms and techniques to control
+           the congestion and keep the load below the capacity.
+       Effects of Congestion
+            As delay increases, performance decreases.
+            If delay increases, retransmission occurs, making situation worse.
+
+Congestion Control Techniques can be classified into two categories:
+
+Open loop congestion control policies are applied to prevent congestion before it
+happens. The congestion control is handled either by the source or the
+destination. Policies adopted by open loop congestion control are:
+
+   1. Retransmission Policy:
+               It is the policy in which retransmission of the packets are taken care.
+               If the sender feels that a sent packet is lost or corrupted, the packet
+               needs to be retransmitted. This transmission may increase the
+               congestion in the network. To prevent congestion, retransmission
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+               timers must be designed to prevent congestion and also able to
+               optimize efficiency.
+   2. Window Policy:
+       The type of window at the sender side may also affect the congestion.
+       Several packets in the Go-back-n window are resent, although some
+       packets may be received successfully at the receiver side. This duplication
+       may increase the congestion in the network and making it worse.
+       Therefore, selective repeat window should be adopted as it sends the
+       specific packet that may have been lost.
+   3. Discarding Policy:
+       A good discarding policy adopted by the routers is that the routers may
+       prevent congestion and at the same time partially discards the corrupted or
+       less sensitive package and also able to maintain the quality of a message.
+       In case of audio file transmission, routers can discard less sensitive packets
+       to prevent congestion and also maintain the quality of the audio file.
+   4. Acknowledgment Policy:
+       Since acknowledgement are also the part of the load in network, the
+       acknowledgment policy imposed by the receiver may also affect
+       congestion. Several approaches can be used to prevent congestion related
+       to acknowledgment.
+       The receiver should send acknowledgement for N packets rather than
+       sending acknowledgement for a single packet. The receiver should send a
+       acknowledgment only if it has to sent a packet or a timer expires.
+   5. Admission Policy:
+       An admission policy, which is a quality-of-service mechanism, can also
+       prevent congestion in virtual-circuit networks. Switches in a flow first check
+       the resource requirement of a flow before admitting it to the network. A
+       router can deny establishing a virtual- circuit connection if there is
+       congestion in the network or if there is a possibility of future congestion.
+
+Closed-loop congestion control mechanisms try to alleviate congestion after it
+happens. Several mechanisms have been used by different protocols.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+   1. Back-pressure:
+       The technique of backpressure refers to a congestion control mechanism in
+       which a congested node stops receiving data from the immediate upstream
+       node or nodes. This may cause the upstream node or nodes to become
+       congested, and they, in turn, reject data from their upstream nodes or
+       nodes. And so on. Backpressure is a node-to-node congestion control that
+       starts with a node and propagates, in the opposite direction of data flow, to
+       the source. The backpressure technique can be applied only to virtual
+       circuit networks, in which each node knows the upstream node from which
+       a flow of data is coming.
+
+   2. Choke Packet:
+        A choke packet is a packet sent by a node to the source to inform it of
+       congestion. Note the difference between the backpressure and choke
+       packet methods. In backpressure, the warning is from one node to its
+       upstream node, although the warning may eventually reach the source
+       station. In the choke packet method, the warning is from the router, which
+       has encountered congestion, to the source station directly. The
+       intermediate nodes through which the packet has traveled are not warned.
+       Figure shows the idea of a choke packet.
+
+   3. Implicit Signaling:
+       In implicit signaling, there is no communication between the congested
+       node or nodes and the source. The source guesses that there is congestion
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+       somewhere in the network from other symptoms. For example, when a
+       source sends several packets and there is no acknowledgment for a while,
+       one assumption is that the network is congested. The delay in receiving an
+       acknowledgment is interpreted as congestion in the network; the source
+       should slow down.
+
+   4. Explicit Signaling:
+       The node that experiences congestion can explicitly send a signal to the
+       source or destination. The explicit signaling method, however, is different
+       from the choke packet method. In the choke packet method, a separate
+       packet is used for this purpose; in the explicit signaling method, the signal is
+       included in the packets that carry data. Explicit signaling can occur in either
+       the forward or the backward direction.
+       Backward Signaling- A bit can be set in a packet moving in the direction
+       opposite to the congestion. This bit can warn the source that there is
+       congestion and that it needs to slow down to avoid the discarding of
+       packets.
+       Forward Signaling- A bit can be set in a packet moving in the direction of
+       the congestion. This bit can warn the destination that there is congestion.
+       The receiver in this case can use policies, such as slowing down the
+       acknowledgments, to alleviate the congestion.
+
+Congestion Control Algorithms:
+
+Also called traffic shaping algorithms, as they help regulate the data transmission
+and reduce congestion.
+
+Leaky Bucket:
+
+       This algorithm is used to control the rate at which traffic is sent to the
+network and shape the burst traffic to a steady traffic stream. Consider a bucket
+with a small hole at the bottom, whatever may be the rate of water pouring into
+the bucket, the rate at which water comes out from that small hole is constant.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+Once the bucket is full, any additional water entering it spills over the sides and is
+lost.
+
+       The same idea of leaky bucket can be applied to packets:
+            When the host has to send a packet, the packet is thrown into the
+               bucket.
+            The bucket leaks at a constant rate, meaning the network interface
+               transmits packets at a constant rate.
+            Bursty traffic is converted to a uniform traffic by the leaky bucket.
+            If a packet arrives when the bucket is full, the packet must be
+               discarded.
+            A FIFO queue is used for holding the packets.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+Token Bucket:
+       The leaky bucket algorithm described above, enforces a rigid pattern at the
+
+output stream, irrespective of the pattern of the input. For many application it is
+better to allow the output to speed up somewhat when a larger burst arrives than
+to loose the data. Token bucket algorithm provides such a solution. In this
+algorithm, bucket holds the token generated at regular intervals. Main steps of
+this algorithm can be described as follows:
+
+    In regular intervals token are thrown into the bucket.
+    The bucket has a maximum capacity.
+    If there is a ready packet, a token is removed from the bucket, and the
+
+       packet is sent
+    If there is no token in the bucket, the packet cannot be sent. The packet
+
+       waits in a queue until a token is thrown into the bucket.
+    The token bucket algorithm is less restrictive than the leaky bucket
+
+       algorithm, in a sense that it allows bursty traffic. However the limit of burst
+       is restricted by the number of tokens available in the bucket at a particular
+       instant of time.
+    The implementation of basic token bucket algorithm is simple; a variable is
+       used just to count the tokens. This counter is incremented every t seconds
+       and is decremented whenever a packet is sent. Whenever this counter
+       reaches to zero, no further packet is sent out.
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+                               Fig: token bucket (a) before (b) after
+
+By: Er. Saurav Raj Pant, IOE ­ TU
+

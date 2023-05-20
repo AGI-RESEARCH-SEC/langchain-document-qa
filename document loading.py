@@ -30,26 +30,6 @@ print(pages[1])
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # class FlanLLM(LLM):
 #     model_name= "google/flan-t5-base"
 #     pipeline= pipeline("text2text-generation", model= model_name, device=0, model_kwargs= {"torch_dtype":torch.bfloat16})
