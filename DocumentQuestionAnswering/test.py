@@ -3,7 +3,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 
 
 embeddings= HuggingFaceEmbeddings()
-persist_directory= 'D:\pretrained models\persist_directory'
+persist_directory= 'D:\pretrained models\DocumentQuestionAnswering\persist_directory'
 # Now we can load the persisted database from disk, and use it as normal. 
 vectordb = Chroma(persist_directory=persist_directory, embedding_function=embeddings)
 
